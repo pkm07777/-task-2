@@ -1,0 +1,204 @@
+
+TO FIND THE PERCENTAGE SCORE OF STUDENT
+In [59]:
+import pandas as pd
+import numpy as np
+df=pd.read_csv("Book1.csv")
+In [33]:
+df.head(10)
+Out[33]:
+
+HOURS
+SCORES
+0
+2.5
+21
+1
+5.1
+47
+2
+3.2
+27
+3
+8.5
+75
+4
+3.5
+30
+5
+1.5
+20
+6
+9.2
+88
+7
+5.5
+60
+8
+8.3
+81
+9
+2.7
+25
+In [34]:
+df.shape
+Out[34]:
+(25, 2)
+In [7]:
+df.dtypes
+Out[7]:
+HOURS     int64
+SCORES    int64
+dtype: object
+In [10]:
+df.isna().sum()
+Out[10]:
+HOURS     0
+SCORES    0
+dtype: int64
+In [35]:
+df.describe()
+Out[35]:
+
+HOURS
+SCORES
+count
+25.000000
+25.000000
+mean
+5.012000
+51.440000
+std
+2.525094
+25.270338
+min
+1.100000
+17.000000
+25%
+2.700000
+30.000000
+50%
+4.800000
+47.000000
+75%
+7.400000
+75.000000
+max
+9.200000
+95.000000
+In [36]:
+df.corr()
+Out[36]:
+
+HOURS
+SCORES
+HOURS
+1.00000
+0.97625
+SCORES
+0.97625
+1.00000
+In [39]:
+df['SCORES'].corr(df['HOURS'])
+Out[39]:
+0.9762500919424142
+
+DATA VISUALISATION
+In [31]:
+import matplotlib.pyplot as plt
+import numpy as np
+%matplotlib inline
+In [41]:
+df.plot.scatter('HOURS','SCORES',color='red')
+Out[41]:
+<matplotlib.axes._subplots.AxesSubplot at 0x210fa847748>
+
+ 
+In [42]:
+df.plot.bar(stacked= True)
+Out[42]:
+<matplotlib.axes._subplots.AxesSubplot at 0x210fa87d6c8>
+
+ 
+
+separating the dependent variable and independent variable
+In [61]:
+x=df.iloc[:,:-1].values
+y=df.iloc[:,1].values
+
+import library used for splitting x and y into train and test
+In [62]:
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test=train_test_split(x,y,test_size=0.2,random_state=0)
+from sklearn.linear_model import LinearRegression
+algo=LinearRegression()
+algo.fit(x_train, y_train)
+print("training complete")
+
+training complete
+In [67]:
+#plotting regression line
+line =algo.coef_*x+algo.intercept_
+In [68]:
+#plotting the test data
+plt.scatter(x,y)
+plt.plot(x,line);
+plt.show()
+
+ 
+
+prediction
+In [69]:
+print(x_test)
+y_pred =algo.predict(x_test)
+
+[[1.5]
+ [3.2]
+ [7.4]
+ [2.5]
+ [5.9]]
+In [75]:
+#comparing actual vs predicted
+df=pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+df
+Out[75]:
+
+Actual
+Predicted
+0
+20
+16.884145
+1
+27
+33.732261
+2
+69
+75.357018
+3
+30
+26.794801
+4
+61
+60.491033
+In [76]:
+plt.scatter(x_test,y_test,color="green")
+plt.plot(x_test,y_pred,color="red",linewidth=2)
+Out[76]:
+[<matplotlib.lines.Line2D at 0x210fb447208>]
+
+ 
+In [81]:
+hours = 9.25
+own_pred =algo.predict(np.array(hours).reshape(1,-1))
+print("no of hours ={}".format(hours))
+print("predited score ={}".format(own_pred[0]))
+
+no of hours =9.25
+predited score =93.69173248737538
+In [80]:
+from sklearn import metrics
+print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))
+
+Mean Absolute Error: 3.983859899002975
+
+ 
